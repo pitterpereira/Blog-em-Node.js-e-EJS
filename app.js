@@ -2,6 +2,7 @@
 
 const express = require("express");
 const ejs = require("ejs");
+const _ = require("lodash");
 
 const app = express();
 app.use(express.urlencoded({extended: true}));
@@ -14,21 +15,49 @@ const homeStartingContent = "Lacus vel facilisis volutpat est velit egestas dui 
 const aboutContent = "Hac habitasse platea dictumst vestibulum rhoncus est pellentesque. Dictumst vestibulum rhoncus est pellentesque elit ullamcorper. Non diam phasellus vestibulum lorem sed. Platea dictumst quisque sagittis purus sit. Egestas sed sed risus pretium quam vulputate dignissim suspendisse. Mauris in aliquam sem fringilla. Semper risus in hendrerit gravida rutrum quisque non tellus orci. Amet massa vitae tortor condimentum lacinia quis vel eros. Enim ut tellus elementum sagittis vitae. Mauris ultrices eros in cursus turpis massa tincidunt dui.";
 const contactContent = "Scelerisque eleifend donec pretium vulputate sapien. Rhoncus urna neque viverra justo nec ultrices. Arcu dui vivamus arcu felis bibendum. Consectetur adipiscing elit duis tristique. Risus viverra adipiscing at in tellus integer feugiat. Sapien nec sagittis aliquam malesuada bibendum arcu vitae. Consequat interdum varius sit amet mattis. Iaculis nunc sed augue lacus. Interdum posuere lorem ipsum dolor sit amet consectetur adipiscing elit. Pulvinar elementum integer enim neque. Ultrices gravida dictum fusce ut placerat orci nulla. Mauris in aliquam sem fringilla ut morbi tincidunt. Tortor posuere ac ut consequat semper viverra nam libero.";
 
+// Vetor de postagens
+const posts = [];
+
 app.get("/", (req, res) => {
-  res.render("home", {text1: homeStartingContent});
+  res.render("home", {postsList: posts});
 });
 
+app.get("/compose", (req, res) => {
+  res.render("compose", {text1: aboutContent});
+});
 
+app.get("/contact", (req, res) => {
+  res.render("contact", {text1: contactContent});
+});
 
+// Página criadora de postagens
+app.get("/compose", (req, res) => {
+  res.render("compose");
+});
 
+// Cria um post novo e o adiciona ao vetor de postagens
+app.post("/compose", (req, res) => {
 
+  const post = {
+    titulo: req.body.inputTitulo,
+    texto: req.body.inputTexto
+  }
 
+  posts.push(post);
 
+  res.render("compose");
+});
 
+// Ao acessar /post com o nome do post, verifica que o post existe e o mostra
+app.get("/post/:titulo", (req, res) => {
 
-
-
-
+  posts.forEach( (post) => {
+    if(_.lowerCase(post.titulo) === _.lowerCase(req.params.titulo))
+      res.render("post", {titulo: post.titulo, texto: post.texto});
+    else
+      res.render("home");
+  });
+});
 
 app.listen(PORT, function() {
   console.log("Server started on port " + PORT);

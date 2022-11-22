@@ -1,7 +1,13 @@
-<%- include("header") %>
+<%- include("partials/header") %>
 
-<h1>home</h1>
+<%if(postsList.length === 0){%>
+    <h1> Home</h1>
+    <p> Não há postagens ainda </p>
+<%} else {%> 
+    <% postsList.forEach( (post) => { %>
+        <h1> <a href="/post/<%=post.titulo%>"> <%= post.titulo %> </a></h1>
+        <p> <%= post.texto.substring(0,50) + " ..."%> </p>
+    <%});%>
+<%}%>
 
-<p> <%= text1 %> </p>
-
-<%- include("footer") %>
+<%- include("partials/footer") %>
